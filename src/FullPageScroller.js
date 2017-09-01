@@ -6,9 +6,6 @@ class FullPageScroller extends Component {
 
   ref = null;
   currentPage = 0;
-  maxSteps = 200;
-  duration = 500; //ms
-  steps = 200;
   animationTimer = null;
   readyToChange = true;
   node = () => this.ref._reactInternalInstance._renderedComponent._hostNode;
@@ -16,16 +13,6 @@ class FullPageScroller extends Component {
   state = {
     pageY:0,
     pageX:0
-  }
-
-  componentDidMount() {
-    // this.animator = setInterval(() => {
-    //   let dist =
-    //   console.log(dist)
-    //   if (dist < 1) {
-    //     this.node().scrollTop = (this.currentPage-1) * this.node().clientHeight + this.node().clientHeight * this.props.interpolator(dist + 0.010)
-    //   }
-    // },this.maxSteps / this.duration)
   }
 
   componentWillUnmount() {
@@ -37,26 +24,19 @@ class FullPageScroller extends Component {
     if (this.readyToChange) {
       this.setState({pageY}, () => {
         this.readyToChange = false;
-        setTimeout(() => this.readyToChange = true, 500)
+        this.animationTimer = setTimeout(
+          () => this.readyToChange = true,
+          this.props.animationDuration
+        );
       })
     }
   }
 
   onWheel = (e) => {
-    if (e.deltaY > 0 && this.state.pageY < this.props.children.length-1) this.setPageY(this.state.pageY + 1);
-    if (e.deltaY < 0 && this.state.pageY > 0) this.setPageY(this.state.pageY - 1);
-    //this.currentPage = Math.ceil(this.node().scrollTop / this.node().clientHeight)
-    // if (e.deltaY > 0) {
-    //   let dist = (this.currentPage * this.node().clientHeight) - this.node().scrollTop
-    //   if (dist < 1) {
-    //     this.currentPage++
-    //   }
-    // } else if (e.deltaY < 0) {
-    //   let dist = this.node().scrollTop - (this.currentPage * this.node().clientHeight)
-    //   if (dist < 1) {
-    //     this.currentPage--
-    //   }
-    // }
+    if (e.deltaY > 0 && this.state.pageY < this.props.children.length-1)
+      this.setPageY(this.state.pageY + 1);
+    if (e.deltaY < 0 && this.state.pageY > 0)
+      this.setPageY(this.state.pageY - 1);
   }
 
   onTouchMove = (e) => {
@@ -71,10 +51,10 @@ class FullPageScroller extends Component {
   `
 
   Content = styled.div`
-    -webkit-transition: 0.5s ease-out;
-    -moz-transition: 0.5s ease-out;
-    -o-transition: 0.5s ease-out;
-    transition: 0.5s ease-out;
+    -webkit-transition: ${this.props.animationDuration/1000}s ${this.props.animationType};
+    -moz-transition: ${this.props.animationDuration/1000}s ${this.props.animationType};
+    -o-transition: ${this.props.animationDuration/1000}s ${this.props.animationType};
+    transition: ${this.props.animationDuration/1000}s ${this.props.animationType};
 
     -webkit-transform: translate(${props => props.offsetX}vh, ${props => -props.offsetY}vh);
     -moz-transform: translate(${props => props.offsetX}vh, ${props => -props.offsetY}vh);
@@ -105,7 +85,8 @@ class FullPageScroller extends Component {
 }
 
 FullPageScroller.defaultProps = {
-  interpolator: ratio => ratio
+  animationDuration: 1000,
+  animationType: 'ease'
 }
 
 export default FullPageScroller;
