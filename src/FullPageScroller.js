@@ -1,25 +1,21 @@
 import React, { Component } from 'react';
 import styled from 'styled-components';
 
+
 class FullPageScroller extends Component {
 
   ref = null;
   currentPage = 0;
-  offsetY = 0;
   maxSteps = 200;
   duration = 500; //ms
   steps = 200;
+  animationTimer = null;
+  readyToChange = true;
   node = () => this.ref._reactInternalInstance._renderedComponent._hostNode;
 
   state = {
-    offsetY:0,
-    offsetX:0
-  }
-
-  onScroll = (e) => {
-    //event.preventDefault();
-    //event.stopPropagation();
-    //console.log(event)
+    pageY:0,
+    pageX:0
   }
 
   componentDidMount() {
@@ -33,12 +29,22 @@ class FullPageScroller extends Component {
   }
 
   componentWillUnmount() {
-    // clearInterval(this.animator)
+    clearTimeout(this.animationTimer)
+  }
+
+
+  setPageY = (pageY) => {
+    if (this.readyToChange) {
+      this.setState({pageY}, () => {
+        this.readyToChange = false;
+        setTimeout(() => this.readyToChange = true, 500)
+      })
+    }
   }
 
   onWheel = (e) => {
-    if (e.deltaY > 0) this.setState({offsetY:this.state.offsetY + 100});
-    if (e.deltaY < 0) this.setState({offsetY:this.state.offsetY - 100});
+    if (e.deltaY > 0 && this.state.pageY < this.props.children.length-1) this.setPageY(this.state.pageY + 1);
+    if (e.deltaY < 0 && this.state.pageY > 0) this.setPageY(this.state.pageY - 1);
     //this.currentPage = Math.ceil(this.node().scrollTop / this.node().clientHeight)
     // if (e.deltaY > 0) {
     //   let dist = (this.currentPage * this.node().clientHeight) - this.node().scrollTop
@@ -55,6 +61,7 @@ class FullPageScroller extends Component {
 
   onTouchMove = (e) => {
     //e.preventDefault();
+    console.log(e)
   }
 
   Wrapper = styled.div`
@@ -64,10 +71,10 @@ class FullPageScroller extends Component {
   `
 
   Content = styled.div`
-    -webkit-transition: 1s ease-in-out;
-    -moz-transition: 1s ease-in-out;
-    -o-transition: 1s ease-in-out;
-    transition: 1s ease-in-out;
+    -webkit-transition: 0.5s ease-out;
+    -moz-transition: 0.5s ease-out;
+    -o-transition: 0.5s ease-out;
+    transition: 0.5s ease-out;
 
     -webkit-transform: translate(${props => props.offsetX}vh, ${props => -props.offsetY}vh);
     -moz-transform: translate(${props => props.offsetX}vh, ${props => -props.offsetY}vh);
@@ -86,8 +93,8 @@ class FullPageScroller extends Component {
         ref={ref => this.ref=ref}
       >
         <this.Content
-          offsetX={this.state.offsetX}
-          offsetY={this.state.offsetY}
+          offsetX={this.state.pageX * 100}
+          offsetY={this.state.pageY * 100}
           ref={ref => console.log('Content:',ref)}
         >
           {this.props.children}

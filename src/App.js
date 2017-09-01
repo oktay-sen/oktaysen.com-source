@@ -23,6 +23,15 @@ class App extends Component {
           <div style={{width:'100vw', height:'100vh', backgroundColor:'#FFFF00'}}>
             <h1 style={{margin:'auto'}}>Page 2</h1>
           </div>
+          <div style={{width:'100vw', height:'100vh', backgroundColor:'#00FF00'}}>
+            <h1 style={{margin:'auto'}}>Page 3</h1>
+          </div>
+          <div style={{width:'100vw', height:'100vh', backgroundColor:'#FF0000'}}>
+            <h1 style={{margin:'auto'}}>Page 4</h1>
+          </div>
+          <div style={{width:'100vw', height:'100vh', backgroundColor:'#0000FF'}}>
+            <h1 style={{margin:'auto'}}>Page 5</h1>
+          </div>
         </FullPageScroller>
       </div>
     );
